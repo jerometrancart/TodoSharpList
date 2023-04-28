@@ -32,16 +32,19 @@ try
                 "SELECT * FROM Todos",
                 connection
             );
+            ///RETOURNE DES VALEURS = EXECUTEREADER
             SqliteDataReader reader = command.ExecuteReader();
             if(reader.HasRows)
             {
                 while(reader.Read())
                 {
+                    ///ON OUBLIE PAS GETORDINAL POUR RECUPERER LES ID DES COLONNES
                     var id = reader.GetInt32(reader.GetOrdinal("Id"));
                     var value = reader.GetString(reader.GetOrdinal("Value"));
                     var completed = reader.GetBoolean(reader.GetOrdinal("Completed"));
-
-                    System.Console.WriteLine($"{id} - {value} (terminé ? {(completed ? "V": "X")})");
+                    
+                    ///SI UNE TACHE EST COMPLETEE LA CONSOLE AFFICHERA V SINON X
+                    System.Console.WriteLine($"{id} - {value} (terminé ? {(completed ? "V" : "X")})");
                 }
             }
             else
@@ -49,14 +52,27 @@ try
                 System.Console.WriteLine("Aucun TODO dans le système !");
             }
             Console.WriteLine("Appuyez sur Entrée pour retourner au menu");
+            Console.ReadLine();
         }
         else if (choix == "2")
         {
+            System.Console.WriteLine("Saisir la tâche à réaliser");
+            var value = Console.ReadLine(); 
+            
+            ///INITIALISE COMPLETED A 0 QUAND ON AJOUTE UNE TACHE
+            SqliteCommand insert = new SqliteCommand("INSERT INTO Todos(Value, Completed) VALUES (@Value, 0)", connection);
+            ///PARAMETRES POUR SECURISER CONTRE INJECTIONS
+            insert.Parameters.AddWithValue("@Value", value);
+            ///NE RETOURNE RIEN = EXECUTENONQUERY
+            insert.ExecuteNonQuery();
 
+            Console.WriteLine("Appuyez sur Entrée pour retourner au menu");
+            Console.ReadLine();
         }
         else if (choix == "3")
         {
-
+            Console.WriteLine("Appuyez sur Entrée pour retourner au menu");
+            Console.ReadLine();
         }
     }
 }
