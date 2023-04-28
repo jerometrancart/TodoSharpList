@@ -71,6 +71,34 @@ try
         }
         else if (choix == "3")
         {
+            
+            int? id = null;
+            
+            while(id is null)
+            {
+                System.Console.WriteLine("Saisissez l'id du todo que vous souhaitez marquer comme complété");
+
+                try
+                {
+                id = int.Parse(Console.ReadLine());
+                System.Console.WriteLine($"Tâche numéro {id} complétée !");
+                }
+                catch
+                {
+                    id = null;
+                }
+            }
+
+            SqliteCommand update = new SqliteCommand(
+                "UPDATE Todos SET Completed = 1 WHERE Id = @Id",
+                connection
+            );
+
+            ///PARAMETRES POUR SECURISER CONTRE INJECTIONS
+            update.Parameters.AddWithValue("@Id", id);
+            ///NE RETOURNE RIEN = EXECUTENONQUERY
+            update.ExecuteNonQuery();
+
             Console.WriteLine("Appuyez sur Entrée pour retourner au menu");
             Console.ReadLine();
         }
