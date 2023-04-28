@@ -7,10 +7,10 @@ try
 {
     connection.Open();
 
-    var createTableCommand = "CREATE TABLE IF NOT" +
-        "EXISTS Todos(Id INTEGER PRIMARY KAY AUTOINCREMENT, )" +
+    var createTableCommand = "CREATE TABLE IF NOT " +
+        "EXISTS Todos (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
         "Value NVARCHAR(2048) NOT NULL, " +
-        "Completed BOOLEAN";
+        "Completed BOOLEAN)";
 
     new SqliteCommand(createTableCommand, connection).ExecuteNonQuery();
 
@@ -33,6 +33,22 @@ try
                 connection
             );
             SqliteDataReader reader = command.ExecuteReader();
+            if(reader.HasRows)
+            {
+                while(reader.Read())
+                {
+                    var id = reader.GetInt32(reader.GetOrdinal("Id"));
+                    var value = reader.GetString(reader.GetOrdinal("Value"));
+                    var completed = reader.GetBoolean(reader.GetOrdinal("Completed"));
+
+                    System.Console.WriteLine($"{id} - {value} (terminé ? {(completed ? "V": "X")})");
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("Aucun TODO dans le système !");
+            }
+            Console.WriteLine("Appuyez sur Entrée pour retourner au menu");
         }
         else if (choix == "2")
         {
@@ -43,10 +59,6 @@ try
 
         }
     }
-}
-catch
-{
-
 }
 finally
 {
